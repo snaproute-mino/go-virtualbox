@@ -33,7 +33,7 @@ type HostonlyNet struct {
 
 // CreateHostonlyNet creates a new host-only network.
 func CreateHostonlyNet() (*HostonlyNet, error) {
-	out, err := vbmOut("hostonlyif", "create")
+	out, err := VBMOut("hostonlyif", "create")
 	if err != nil {
 		return nil, err
 	}
@@ -47,20 +47,20 @@ func CreateHostonlyNet() (*HostonlyNet, error) {
 // Config changes the configuration of the host-only network.
 func (n *HostonlyNet) Config() error {
 	if n.IPv4.IP != nil && n.IPv4.Mask != nil {
-		if err := vbm("hostonlyif", "ipconfig", n.Name, "--ip", n.IPv4.IP.String(), "--netmask", net.IP(n.IPv4.Mask).String()); err != nil {
+		if err := VBM("hostonlyif", "ipconfig", n.Name, "--ip", n.IPv4.IP.String(), "--netmask", net.IP(n.IPv4.Mask).String()); err != nil {
 			return err
 		}
 	}
 
 	if n.IPv6.IP != nil && n.IPv6.Mask != nil {
 		prefixLen, _ := n.IPv6.Mask.Size()
-		if err := vbm("hostonlyif", "ipconfig", n.Name, "--ipv6", n.IPv6.IP.String(), "--netmasklengthv6", fmt.Sprintf("%d", prefixLen)); err != nil {
+		if err := VBM("hostonlyif", "ipconfig", n.Name, "--ipv6", n.IPv6.IP.String(), "--netmasklengthv6", fmt.Sprintf("%d", prefixLen)); err != nil {
 			return err
 		}
 	}
 
 	if n.DHCP {
-		vbm("hostonlyif", "ipconfig", n.Name, "--dhcp") // not implemented as of VirtualBox 4.3
+		VBM("hostonlyif", "ipconfig", n.Name, "--dhcp") // not implemented as of VirtualBox 4.3
 	}
 
 	return nil
@@ -68,7 +68,7 @@ func (n *HostonlyNet) Config() error {
 
 // HostonlyNets gets all host-only networks in a  map keyed by HostonlyNet.NetworkName.
 func HostonlyNets() (map[string]*HostonlyNet, error) {
-	out, err := vbmOut("list", "hostonlyifs")
+	out, err := VBMOut("list", "hostonlyifs")
 	if err != nil {
 		return nil, err
 	}

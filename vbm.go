@@ -13,14 +13,14 @@ import (
 )
 
 var (
-	VBM     string // Path to VBoxManage utility.
+	VBOXM   string // Path to VBoxManage utility.
 	Verbose bool   // Verbose mode.
 )
 
 func init() {
-	VBM = "VBoxManage"
+	VBOXM = "VBoxManage"
 	if p := os.Getenv("VBOX_INSTALL_PATH"); p != "" && runtime.GOOS == "windows" {
-		VBM = filepath.Join(p, "VBoxManage.exe")
+		VBOXM = filepath.Join(p, "VBoxManage.exe")
 	}
 }
 
@@ -37,12 +37,12 @@ var (
 	ErrVBMNotFound     = errors.New("VBoxManage not found")
 )
 
-func vbm(args ...string) error {
-	cmd := exec.Command(VBM, args...)
+func VBM(args ...string) error {
+	cmd := exec.Command(VBOXM, args...)
 	if Verbose {
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
-		log.Printf("executing: %v %v", VBM, strings.Join(args, " "))
+		log.Printf("executing: %v %v", VBOXM, strings.Join(args, " "))
 	}
 	if err := cmd.Run(); err != nil {
 		if ee, ok := err.(*exec.Error); ok && ee == exec.ErrNotFound {
@@ -53,11 +53,11 @@ func vbm(args ...string) error {
 	return nil
 }
 
-func vbmOut(args ...string) (string, error) {
-	cmd := exec.Command(VBM, args...)
+func VBMOut(args ...string) (string, error) {
+	cmd := exec.Command(VBOXM, args...)
 	if Verbose {
 		cmd.Stderr = os.Stderr
-		log.Printf("executing: %v %v", VBM, strings.Join(args, " "))
+		log.Printf("executing: %v %v", VBOXM, strings.Join(args, " "))
 	}
 
 	b, err := cmd.Output()
@@ -69,10 +69,10 @@ func vbmOut(args ...string) (string, error) {
 	return string(b), err
 }
 
-func vbmOutErr(args ...string) (string, string, error) {
-	cmd := exec.Command(VBM, args...)
+func VBMOutErr(args ...string) (string, string, error) {
+	cmd := exec.Command(VBOXM, args...)
 	if Verbose {
-		log.Printf("executing: %v %v", VBM, strings.Join(args, " "))
+		log.Printf("executing: %v %v", VBOXM, strings.Join(args, " "))
 	}
 	var stdout bytes.Buffer
 	var stderr bytes.Buffer
